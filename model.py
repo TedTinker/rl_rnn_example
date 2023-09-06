@@ -48,5 +48,5 @@ if __name__ == "__main__":
     
     # Print the model summary
     print("\nModel Summary:")
-    print(torch_summary(dqn, ((3, 10, 4),(3, 10, 1))))
+    print(torch_summary(dqn, ((3, 10, 2),(3, 10, 1))))
 # %%
