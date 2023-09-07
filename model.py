@@ -7,19 +7,19 @@ class DQN(nn.Module):
     """
     Deep Q-Network (DQN) Model. Q^\pi approximates Q^* by estimating r + \gamma Q^\pi (s_t+1, \pi(s_t+1))
     """
-    def __init__(self, n_observations=2, n_actions=2, hidden_size = 8):
+    def __init__(self, n_states=2, n_actions=2, hidden_size = 8):
         """
         Initialize the DQN model.
         
         Args:
-        - n_observations (int): Number of observation inputs.
+        - n_states (int): Number of state inputs.
         - n_actions (int): Number of action outputs.
         - hidden size (int): Size of hidden states.
         """
         super().__init__()
         
         self.gru = nn.GRU(
-            input_size =  n_observations + 1,
+            input_size =  n_states + 1,
             hidden_size = hidden_size,
             batch_first = True)
         
@@ -31,13 +31,13 @@ class DQN(nn.Module):
             nn.Linear(128, n_actions)
         )
 
-    def forward(self, x, a, h = None):
+    def forward(self, state, action, h = None):
         """
         Forward pass through the network.
         """
-        o = torch.cat([x, a], dim = -1)
+        x = torch.cat([state, action], dim = -1)
         h = h.permute(1, 0, 2) if h != None else h
-        h, _ = self.gru(o, h)  
+        h, _ = self.gru(x, h)  
         
         return self.network(h), h
 
