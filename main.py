@@ -28,7 +28,7 @@ optimizer = optim.Adam(policy_dqn.parameters(), lr=0.001)
 criterion = nn.SmoothL1Loss()
 
 # Environment setup
-env = gymnasium.make("CartPole-v1")
+env = gymnasium.make("CartPole-v1", render_mode = "rgb_array")
 episode_durations = []
 
 
@@ -105,7 +105,7 @@ def run_episode(render = False, episode_num = 0):
     """
     Execute one episode of the environment.
     """
-    state = env.reset()
+    state, _ = env.reset()
     state = [state[0], state[2]]
     state = torch.tensor(state, device=device).unsqueeze(0).unsqueeze(0)
     t = 0
@@ -115,7 +115,7 @@ def run_episode(render = False, episode_num = 0):
 
     while not done:
         if render: 
-            frame = env.render(mode="rgb_array")
+            frame = env.render()
             plt.axis('off')
             plt.imshow(frame)
             plt.savefig(f'plots/{episode_num}/frame_{t}.png', bbox_inches='tight', pad_inches=0)
@@ -123,10 +123,9 @@ def run_episode(render = False, episode_num = 0):
         
         t += 1
         action, h = select_action(state, prev_action.unsqueeze(0), h)
-        next_state, reward, done, _ = env.step(action.item())
+        next_state, reward, done, _, _ = env.step(action.item())
         next_state = [next_state[0], next_state[2]]
         next_state = torch.tensor(next_state, device=device).unsqueeze(0).unsqueeze(0)
-        reward = torch.tensor([-1 if done else 1], device=device)
         buffer.push(state, action, reward, next_state, done, done)
         state = next_state
         prev_action = action

@@ -31,11 +31,11 @@ class DQN(nn.Module):
             nn.Linear(128, n_actions)
         )
 
-    def forward(self, state, action, h = None):
+    def forward(self, state, prev_action, h = None):
         """
         Forward pass through the network.
         """
-        x = torch.cat([state, action], dim = -1)
+        x = torch.cat([state, prev_action], dim = -1)
         h = h.permute(1, 0, 2) if h != None else h
         h, _ = self.gru(x, h)  
         
